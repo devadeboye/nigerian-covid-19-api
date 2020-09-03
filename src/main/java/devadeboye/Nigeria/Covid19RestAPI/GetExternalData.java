@@ -21,6 +21,7 @@ public class GetExternalData {
     public GetExternalData() {
     }
 
+    /*
     private void getDataFromSource() {
         final String uri = "https://covidnigeria.herokuapp.com/api";
         RestTemplate restTemplate = new RestTemplate();
@@ -35,23 +36,24 @@ public class GetExternalData {
             e.printStackTrace();
         }
     }
+    */
 
     private void parseJson() {
+        final String uri = "https://covidnigeria.herokuapp.com/api";
+        RestTemplate restTemplate = new RestTemplate();
+        String dataString = restTemplate.getForObject(uri, String.class);
+
         JSONParser parser = new JSONParser();
-        try (FileReader reader = new FileReader("foo.json")) {
+        try {
             // read json data from file
-            Object obj = parser.parse(reader);
+            Object obj = parser.parse(dataString);
 
             // typecasting obj to JSONObject
             JSONObject fileContent = (JSONObject) obj;
             fileContent = (JSONObject) fileContent.get("data");
             this.rawCovidData = fileContent;
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -65,19 +67,21 @@ public class GetExternalData {
         covidData1.remove("states");
         this.nationalData = covidData1;
 
-        // prepare state data
+        // prepare state data by removing unwanted data
         covidData2.remove("discharged");
         covidData2.remove("death");
         covidData2.remove("totalActiveCases");
         covidData2.remove("totalConfirmedCases");
         covidData2.remove("totalSamplesTested");
-        // this.stateData = (JSONArray) covidData2.get("states");
         JSONArray temp = (JSONArray) covidData2.get("states");
+
         for(Object item : temp) {
             JSONObject jsonItem = (JSONObject) item;
             jsonItem.remove("_id");
+
             // cast state name to string
             String stateKey = (String) jsonItem.get("state");
+
             try{
                 // add key and value to stateData JsonObject
                 this.stateData.put(stateKey, jsonItem);

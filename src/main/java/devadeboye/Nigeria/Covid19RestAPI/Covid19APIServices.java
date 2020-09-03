@@ -11,10 +11,6 @@ import java.util.List;
 public class Covid19APIServices {
 
     @Autowired
-    private NationalFigureRepository nationalRepo;
-    @Autowired
-    private StateFigureRepository stateRepo;
-    @Autowired
     private GetExternalData getExternalData;
 
     public JSONObject getSummary() {
