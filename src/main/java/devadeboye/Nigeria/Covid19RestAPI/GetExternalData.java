@@ -7,10 +7,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.*;
 
 @Service
 public class GetExternalData {
@@ -21,41 +18,38 @@ public class GetExternalData {
     public GetExternalData() {
     }
 
-    /*
-    private void getDataFromSource() {
-        final String uri = "https://covidnigeria.herokuapp.com/api";
-        RestTemplate restTemplate = new RestTemplate();
-        String dataString = restTemplate.getForObject(uri, String.class);
-        JSONParser parser = new JSONParser();
-        JSONObject obj;
-
+    private String CustomFileReader(String location){
+        File file;
+        BufferedReader reader = null;
+        String fileContent = null;
         try {
-            obj = (JSONObject)parser.parse(dataString);
-            System.out.println(obj);
-        }catch (ParseException e) {
-            e.printStackTrace();
+            file = new File(location);
+            reader = new BufferedReader(new FileReader(file));
+            fileContent = reader.readLine();
+        }catch (IOException e) {
+            System.out.println("file " + location + " is not found!");
         }
+        return fileContent;
     }
-    */
 
     private void parseJson() {
-        final String uri = "https://covidnigeria.herokuapp.com/api";
+        final String uri = CustomFileReader("CovidAppConfig.txt");
         RestTemplate restTemplate = new RestTemplate();
         String dataString = restTemplate.getForObject(uri, String.class);
-
         JSONParser parser = new JSONParser();
+        Object obj = null;
+
         try {
-            // read json data from file
-            Object obj = parser.parse(dataString);
-
-            // typecasting obj to JSONObject
-            JSONObject fileContent = (JSONObject) obj;
-            fileContent = (JSONObject) fileContent.get("data");
-            this.rawCovidData = fileContent;
-
+            // read json data
+            obj = parser.parse(dataString);
         } catch (ParseException e) {
-            e.printStackTrace();
+            System.out.println("unable to parse the json data!");
         }
+
+        // typecasting obj to JSONObject
+        JSONObject fileContent = (JSONObject) obj;
+        fileContent = (JSONObject) fileContent.get("data");
+        this.rawCovidData = fileContent;
     }
 
     private void populateVariables() {
@@ -86,7 +80,7 @@ public class GetExternalData {
                 // add key and value to stateData JsonObject
                 this.stateData.put(stateKey, jsonItem);
             }catch (NullPointerException e) {
-                e.printStackTrace();
+                System.out.println("There is problem in adding data to stateData Object");
             }
         }
     }
