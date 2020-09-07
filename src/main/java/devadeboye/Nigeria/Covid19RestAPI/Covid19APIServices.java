@@ -10,15 +10,15 @@ public class Covid19APIServices {
     @Autowired
     private GetExternalData getExternalData;
 
-    public JSONObject getSummary() {
+    public JSONObject getNationalDataSummary() {
         return getExternalData.getNationalData();
     }
 
-    public JSONObject getFullDetails() {
+    public JSONObject getNationalDataBreakdown() {
         return getExternalData.getStateData();
     }
 
-    public JSONObject getStateData(String state) {
+    public JSONObject getSpecificStateData(String state) {
         // state arg is state name
         JSONObject covidData = getExternalData.getStateData();
         return (JSONObject) covidData.get(state);

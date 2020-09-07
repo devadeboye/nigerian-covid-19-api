@@ -17,18 +17,18 @@ public class Covid19APIController {
     private Covid19APIServices services;
     @GetMapping("/summary")
     public JSONObject summary() {
-        return services.getSummary();
+        return services.getNationalDataSummary();
     }
 
     @GetMapping("/details")
     public JSONObject details() {
-        return services.getFullDetails();
+        return services.getNationalDataBreakdown();
     }
 
     @GetMapping("/state/{state}")
     public ResponseEntity<JSONObject> get(@PathVariable String state) {
         try {
-            JSONObject stateData = services.getStateData(state);
+            JSONObject stateData = services.getSpecificStateData(state);
             return new ResponseEntity<JSONObject>(stateData, HttpStatus.OK);
         }catch (NoSuchElementException e) {
             return new ResponseEntity<JSONObject>(HttpStatus.NOT_FOUND);

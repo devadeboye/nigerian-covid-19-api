@@ -37,17 +37,17 @@ public class GetExternalData {
         RestTemplate restTemplate = new RestTemplate();
         String dataString = restTemplate.getForObject(uri, String.class);
         JSONParser parser = new JSONParser();
-        Object obj = null;
+        Object dataStringObject = null;
 
         try {
             // read json data
-            obj = parser.parse(dataString);
+            dataStringObject = parser.parse(dataString);
         } catch (ParseException e) {
             System.out.println("unable to parse the json data!");
         }
 
-        // typecasting obj to JSONObject
-        JSONObject fileContent = (JSONObject) obj;
+        // typecasting dataStringObject to JSONObject
+        JSONObject fileContent = (JSONObject) dataStringObject;
         fileContent = (JSONObject) fileContent.get("data");
         this.rawCovidData = fileContent;
     }
