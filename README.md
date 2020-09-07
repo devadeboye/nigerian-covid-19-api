@@ -10,7 +10,7 @@ specific info.
 ## Customization
 Note: to change the source of the covid19 data, edit the covidAppConfig.txt 
 file at the root of the project, but bear it in mind that you may have to
-handle some things in the json format returned by your source is totally
+handle some things if the json format returned by your source is totally
 different from the default one.
 
 ## API
