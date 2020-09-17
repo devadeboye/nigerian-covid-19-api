@@ -32,53 +32,59 @@ public class GetExternalData {
         return fileContent;
     }
 
-    private void parseJson() {
+    private String getDataFromSource() {
         final String uri = CustomFileReader("CovidAppConfig.txt");
         RestTemplate restTemplate = new RestTemplate();
         String dataString = restTemplate.getForObject(uri, String.class);
-        JSONParser parser = new JSONParser();
-        Object dataStringObject = null;
+        return dataString;
+    }
 
+    private void parseSourceData() {
+        JSONParser parser = new JSONParser();
+        Object parsedSourceData = null;
+        String sourceData = getDataFromSource();
         try {
-            // read json data
-            dataStringObject = parser.parse(dataString);
+            parsedSourceData = parser.parse(sourceData);
         } catch (ParseException e) {
             System.out.println("unable to parse the json data!");
         }
-
-        // typecasting dataStringObject to JSONObject
-        JSONObject fileContent = (JSONObject) dataStringObject;
-        fileContent = (JSONObject) fileContent.get("data");
-        this.rawCovidData = fileContent;
+        JSONObject parsedSourceDataObj = (JSONObject) parsedSourceData;
+        parsedSourceDataObj = (JSONObject) parsedSourceDataObj.get("data");
+        this.rawCovidData = parsedSourceDataObj;
     }
 
-    private void populateVariables() {
-        parseJson();
-        JSONObject covidData1 = (JSONObject) this.rawCovidData.clone();
-        JSONObject covidData2 = (JSONObject) this.rawCovidData.clone();
+    private void setNationalDataVariable() {
+        if (rawCovidData == null) { parseSourceData(); }
+        JSONObject rawCovidDataCopy = (JSONObject) this.rawCovidData.clone();
+        rawCovidDataCopy.remove("states");
+        this.nationalData = rawCovidDataCopy;
+    }
 
-        // prepare national data summary
-        covidData1.remove("states");
-        this.nationalData = covidData1;
+    private void removeJsonObjectElements(JSONObject jsonObject, String args[]) {
+        for (String jsonKey : args) {
+            jsonObject.remove(jsonKey);
+        }
+    }
 
-        // prepare state data by removing unwanted data
-        covidData2.remove("discharged");
-        covidData2.remove("death");
-        covidData2.remove("totalActiveCases");
-        covidData2.remove("totalConfirmedCases");
-        covidData2.remove("totalSamplesTested");
-        JSONArray temp = (JSONArray) covidData2.get("states");
+    private void setStateDataVariable() {
+        if (rawCovidData == null) { parseSourceData();}
+        JSONObject rawCovidDataCopy = (JSONObject) this.rawCovidData.clone();
+        String elementsToBeRemoved[] = {
+                "discharged", "death", "totalActiveCases",
+                "totalConfirmedCases", "totalSamplesTested"
+        };
+        removeJsonObjectElements(rawCovidDataCopy, elementsToBeRemoved);
+        JSONArray allStateCovidData = (JSONArray) rawCovidDataCopy.get("states");
 
-        for(Object item : temp) {
-            JSONObject jsonItem = (JSONObject) item;
-            jsonItem.remove("_id");
-
-            // cast state name to string
-            String stateKey = (String) jsonItem.get("state");
-
+        for(Object eachStateData : allStateCovidData) {
+            JSONObject eachStateDataJSONObject = (JSONObject) eachStateData;
+            // remove unwanted element
+            eachStateDataJSONObject.remove("_id");
+            // get state name to be use as key and cast to string
+            String stateKey = (String) eachStateDataJSONObject.get("state");
             try{
                 // add key and value to stateData JsonObject
-                this.stateData.put(stateKey, jsonItem);
+                this.stateData.put(stateKey, eachStateDataJSONObject);
             }catch (NullPointerException e) {
                 System.out.println("There is problem in adding data to stateData Object");
             }
@@ -86,12 +92,12 @@ public class GetExternalData {
     }
 
     public JSONObject getNationalData() {
-        populateVariables();
+        setNationalDataVariable();
         return nationalData;
     }
 
     public JSONObject getStateData() {
-        populateVariables();
+        setStateDataVariable();
         return stateData;
     }
 }

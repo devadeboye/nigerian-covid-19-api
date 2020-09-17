@@ -2,9 +2,8 @@
 A RESTful API to nigerian covid19 statistics
 
 This is a RESTful API to get latest Nigerian covid19 statistics. 
-This work leverage on sink-opuba's  covid-19-nigeria-api project at
-https://github.com/sink-opuba/covid-19-api to get the statistics 
-from NCDC website and provide restful endpoints to get some
+This work leverage on [sink-opuba's covid-19-nigeria-api project](https://github.com/sink-opuba/covid-19-api) at
+ get the statistics from NCDC website and provide restful endpoints to get some
 specific info.
 
 ## Customization
