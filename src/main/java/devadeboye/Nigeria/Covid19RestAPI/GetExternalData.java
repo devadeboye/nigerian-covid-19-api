@@ -18,18 +18,34 @@ public class GetExternalData {
     public GetExternalData() {
     }
 
-    private String CustomFileReader(String location){
-        File file;
-        BufferedReader reader = null;
-        String fileContent = null;
+    public JSONObject getNationalData() {
+        setNationalDataVariable();
+        return nationalData;
+    }
+
+    private void setNationalDataVariable() {
+        if (rawCovidData == null) { setRawCovidData(); }
+        JSONObject rawCovidDataCopy = (JSONObject) this.rawCovidData.clone();
+        rawCovidDataCopy.remove("states");
+        this.nationalData = rawCovidDataCopy;
+    }
+
+    private void setRawCovidData() {
+        JSONObject parsedSourceDataObj = (JSONObject) parseSourceData();
+        parsedSourceDataObj = (JSONObject) parsedSourceDataObj.get("data");
+        this.rawCovidData = parsedSourceDataObj;
+    }
+
+    private Object parseSourceData() {
+        JSONParser parser = new JSONParser();
+        Object parsedSourceData = null;
+        String sourceData = getDataFromSource();
         try {
-            file = new File(location);
-            reader = new BufferedReader(new FileReader(file));
-            fileContent = reader.readLine();
-        }catch (IOException e) {
-            System.out.println("file " + location + " is not found!");
+            parsedSourceData = parser.parse(sourceData);
+        } catch (ParseException e) {
+            System.out.println("unable to parse the json data!");
         }
-        return fileContent;
+        return parsedSourceData;
     }
 
     private String getDataFromSource() {
@@ -39,65 +55,64 @@ public class GetExternalData {
         return dataString;
     }
 
-    private void parseSourceData() {
-        JSONParser parser = new JSONParser();
-        Object parsedSourceData = null;
-        String sourceData = getDataFromSource();
-        try {
-            parsedSourceData = parser.parse(sourceData);
-        } catch (ParseException e) {
-            System.out.println("unable to parse the json data!");
-        }
-        JSONObject parsedSourceDataObj = (JSONObject) parsedSourceData;
-        parsedSourceDataObj = (JSONObject) parsedSourceDataObj.get("data");
-        this.rawCovidData = parsedSourceDataObj;
-    }
-
-    private void setNationalDataVariable() {
-        if (rawCovidData == null) { parseSourceData(); }
-        JSONObject rawCovidDataCopy = (JSONObject) this.rawCovidData.clone();
-        rawCovidDataCopy.remove("states");
-        this.nationalData = rawCovidDataCopy;
-    }
-
-    private void removeJsonObjectElements(JSONObject jsonObject, String args[]) {
-        for (String jsonKey : args) {
-            jsonObject.remove(jsonKey);
-        }
+    public JSONObject getStateData() {
+        setStateDataVariable();
+        return stateData;
     }
 
     private void setStateDataVariable() {
-        if (rawCovidData == null) { parseSourceData();}
+        if (rawCovidData == null) {setRawCovidData(); }
         JSONObject rawCovidDataCopy = (JSONObject) this.rawCovidData.clone();
+        rawCovidDataCopy = removeNationSummaryFromData(rawCovidDataCopy);
+        JSONArray allStateCovidData = (JSONArray) rawCovidDataCopy.get("states");
+        JSONObject filteredStateData = filterStateData(allStateCovidData);
+        this.stateData =filteredStateData;
+    }
+
+    private JSONObject removeNationSummaryFromData(JSONObject data) {
         String elementsToBeRemoved[] = {
                 "discharged", "death", "totalActiveCases",
                 "totalConfirmedCases", "totalSamplesTested"
         };
-        removeJsonObjectElements(rawCovidDataCopy, elementsToBeRemoved);
-        JSONArray allStateCovidData = (JSONArray) rawCovidDataCopy.get("states");
+        data = removeJsonObjectElements(data, elementsToBeRemoved);
+        return data;
+    }
 
+    private JSONObject removeJsonObjectElements(JSONObject jsonObject, String args[]) {
+        for (String jsonKey : args) {
+            jsonObject.remove(jsonKey);
+        }
+        return jsonObject;
+    }
+
+    private JSONObject filterStateData(JSONArray allStateCovidData) {
+        JSONObject filteredStateData = new JSONObject();
         for(Object eachStateData : allStateCovidData) {
             JSONObject eachStateDataJSONObject = (JSONObject) eachStateData;
-            // remove unwanted element
             eachStateDataJSONObject.remove("_id");
-            // get state name to be use as key and cast to string
             String stateKey = (String) eachStateDataJSONObject.get("state");
-            try{
-                // add key and value to stateData JsonObject
-                this.stateData.put(stateKey, eachStateDataJSONObject);
-            }catch (NullPointerException e) {
-                System.out.println("There is problem in adding data to stateData Object");
-            }
+            putItemIntoJSONObject(filteredStateData, stateKey, eachStateDataJSONObject);
+        }
+        return filteredStateData;
+    }
+
+    private void putItemIntoJSONObject(JSONObject objectName, String key, JSONObject value) {
+        try{
+            objectName.put(key, value);
+        }catch (NullPointerException e) {
+            System.out.println("There is problem in adding data to stateData Object");
         }
     }
 
-    public JSONObject getNationalData() {
-        setNationalDataVariable();
-        return nationalData;
-    }
-
-    public JSONObject getStateData() {
-        setStateDataVariable();
-        return stateData;
+    private String CustomFileReader(String location){
+        String fileContent = null;
+        try {
+            File file = new File(location);
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            fileContent = reader.readLine();
+        }catch (IOException e) {
+            System.out.println("file " + location + " is not found!");
+        }
+        return fileContent;
     }
 }
