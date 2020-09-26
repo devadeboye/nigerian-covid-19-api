@@ -49,7 +49,7 @@ public class GetExternalData {
     }
 
     private String getDataFromSource() {
-        final String uri = CustomFileReader("CovidAppConfig.txt");
+        final String uri = customFileReader("CovidAppConfig.txt");
         RestTemplate restTemplate = new RestTemplate();
         String dataString = restTemplate.getForObject(uri, String.class);
         return dataString;
@@ -104,7 +104,7 @@ public class GetExternalData {
         }
     }
 
-    private String CustomFileReader(String location){
+    private String customFileReader(String location){
         String fileContent = null;
         try {
             File file = new File(location);
