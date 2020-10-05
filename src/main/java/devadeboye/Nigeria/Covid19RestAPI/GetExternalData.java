@@ -31,17 +31,17 @@ public class GetExternalData {
     }
 
     private void setRawCovidData() {
-        JSONObject parsedSourceDataObj = (JSONObject) parseSourceData();
+        JSONObject parsedSourceDataObj = parseSourceData();
         parsedSourceDataObj = (JSONObject) parsedSourceDataObj.get("data");
         this.rawCovidData = parsedSourceDataObj;
     }
 
-    private Object parseSourceData() {
+    private JSONObject parseSourceData() {
         JSONParser parser = new JSONParser();
-        Object parsedSourceData = null;
+        JSONObject parsedSourceData = new JSONObject();
         String sourceData = getDataFromSource();
         try {
-            parsedSourceData = parser.parse(sourceData);
+            parsedSourceData = (JSONObject) parser.parse(sourceData);
         } catch (ParseException e) {
             System.out.println("unable to parse the json data!");
         }
