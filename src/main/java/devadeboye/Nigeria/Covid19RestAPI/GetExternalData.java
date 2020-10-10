@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,6 +15,8 @@ public class GetExternalData {
     private JSONObject nationalData;
     private JSONObject stateData = new JSONObject();
     private JSONObject rawCovidData;
+    @Value("${sourceApiUri}")
+    private String sourceApiUri;
 
     public GetExternalData() {
     }
@@ -49,9 +52,9 @@ public class GetExternalData {
     }
 
     private String getDataFromSource() {
-        final String uri = customFileReader("CovidAppConfig.txt");
+        final String uri;
         RestTemplate restTemplate = new RestTemplate();
-        String dataString = restTemplate.getForObject(uri, String.class);
+        String dataString = restTemplate.getForObject(sourceApiUri, String.class);
         return dataString;
     }
 

@@ -7,8 +7,8 @@ This work leverage on [sink-opuba's covid-19-nigeria-api project](https://github
 specific info.
 
 ## Customization
-Note: to change the source of the covid19 data, edit the covidAppConfig.txt 
-file at the root of the project, but bear it in mind that you may have to
+Note: to change the source of the covid19 data, change the value for sourceApiUri
+in application.properties file, but bear it in mind that you may have to
 handle some things if the json format returned by your source is totally
 different from the default one.
 
