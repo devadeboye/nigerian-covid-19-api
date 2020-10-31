@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
 
 @Service
 public class GetExternalData {
@@ -52,10 +51,8 @@ public class GetExternalData {
     }
 
     private String getDataFromSource() {
-        final String uri;
         RestTemplate restTemplate = new RestTemplate();
-        String dataString = restTemplate.getForObject(sourceApiUri, String.class);
-        return dataString;
+        return restTemplate.getForObject(sourceApiUri, String.class);
     }
 
     public JSONObject getStateData() {
@@ -68,20 +65,18 @@ public class GetExternalData {
         JSONObject rawCovidDataCopy = (JSONObject) this.rawCovidData.clone();
         rawCovidDataCopy = removeNationSummaryFromData(rawCovidDataCopy);
         JSONArray allStateCovidData = (JSONArray) rawCovidDataCopy.get("states");
-        JSONObject filteredStateData = filterStateData(allStateCovidData);
-        this.stateData =filteredStateData;
+        this.stateData= filterStateData(allStateCovidData);
     }
 
     private JSONObject removeNationSummaryFromData(JSONObject data) {
-        String elementsToBeRemoved[] = {
+        String[] elementsToBeRemoved = {
                 "discharged", "death", "totalActiveCases",
                 "totalConfirmedCases", "totalSamplesTested"
         };
-        data = removeJsonObjectElements(data, elementsToBeRemoved);
-        return data;
+        return removeJsonObjectElements(data, elementsToBeRemoved);
     }
 
-    private JSONObject removeJsonObjectElements(JSONObject jsonObject, String args[]) {
+    private JSONObject removeJsonObjectElements(JSONObject jsonObject, String[] args) {
         for (String jsonKey : args) {
             jsonObject.remove(jsonKey);
         }
