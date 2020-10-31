@@ -106,16 +106,4 @@ public class GetExternalData {
             System.out.println("There is problem in adding data to stateData Object");
         }
     }
-
-    private String customFileReader(String location){
-        String fileContent = null;
-        try {
-            File file = new File(location);
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            fileContent = reader.readLine();
-        }catch (IOException e) {
-            System.out.println("file " + location + " is not found!");
-        }
-        return fileContent;
-    }
 }
