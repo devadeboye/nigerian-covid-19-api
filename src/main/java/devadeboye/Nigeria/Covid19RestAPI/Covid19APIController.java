@@ -15,6 +15,12 @@ public class Covid19APIController {
 
     @Autowired
     private Covid19APIServices services;
+
+    @GetMapping("/")
+    public JSONObject home() {
+        return services.getNationalDataSummary();
+    }
+
     @GetMapping("/summary")
     public JSONObject summary() {
         return services.getNationalDataSummary();
