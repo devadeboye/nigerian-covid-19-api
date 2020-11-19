@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,9 +19,11 @@ public class Covid19APIController {
 
     @GetMapping("/")
     public JSONObject home() {
+        // TODO: serve index.html file from this later
         return services.getNationalDataSummary();
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/summary")
     public JSONObject summary() {
         return services.getNationalDataSummary();
