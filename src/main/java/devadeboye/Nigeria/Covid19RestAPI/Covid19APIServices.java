@@ -9,8 +9,6 @@ public class Covid19APIServices {
 
     @Autowired
     private GetExternalData getExternalData;
-    //@Autowired
-    //private NationalSummaryRepository nationalSummaryRepository;
 
     public JSONObject getNationalDataSummary() {
         return getExternalData.getNationalData();

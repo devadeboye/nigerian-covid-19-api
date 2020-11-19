@@ -94,7 +94,6 @@ public class GetExternalData {
         return filteredStateData;
     }
 
-    @SuppressWarnings("unchecked")
     private void putItemIntoJSONObject(JSONObject objectName, String key, JSONObject value) {
         try{
             objectName.put(key, value);
