@@ -17,7 +17,4 @@ different from the default one.
 ## API
 https://nigerian-covid-19-api.herokuapp.com/summary - to get summary of national covid19 statistics
 
-https://nigerian-covid-19-api.herokuapp.com/details - to get data for all states
-
-domain/state/statename - to get data for specific state
-e.g https://nigerian-covid-19-api.herokuapp.com/state/Lagos. (Note: statename must start with uppercase) 
+https://nigerian-covid-19-api.herokuapp.com/details - to get data for all states 
